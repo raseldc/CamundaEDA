@@ -52,6 +52,9 @@ mvn spring-boot:run
 - Implement retries and error handling in Kafka consumers.
 - Expand the event-driven flow with more microservices.
 
+## Image
+-![Event-Driven Architecture](\src\main\resources\BikeRegSaga.png)
+
 ---
 ### 💡 Need Help?
 Feel free to raise an issue or contribute to the project!
