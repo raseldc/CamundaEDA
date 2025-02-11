@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="0198e04" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.6.0">
+  <bpmn:process id="BikeRegSaga" name="BikeRegSaga" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_1n64627</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateCatchEvent id="msg-catch-start" name="wait-for-start">
+      <bpmn:incoming>Flow_1qw6lbe</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xfsoac</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_195jict" messageRef="Message_31u6ohe" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_1qw6lbe" sourceRef="BikeRegStart" targetRef="msg-catch-start" />
+    <bpmn:intermediateCatchEvent id="Wait-for-sdb-confirm" name="Wait-for-sdb-confirm">
+      <bpmn:incoming>Flow_0wv5olm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gcapwi</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1mjk717" messageRef="Message_243vf23" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0wv5olm" sourceRef="StateDbUpdate" targetRef="Wait-for-sdb-confirm" />
+    <bpmn:intermediateCatchEvent id="wait-for-redb-conf" name="wait-for-redb-conf">
+      <bpmn:incoming>Flow_0d6toyf</bpmn:incoming>
+      <bpmn:outgoing>Flow_06q8inz</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0190aaq" messageRef="Message_11e7qhu" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0d6toyf" sourceRef="ReadDbUpdateEvent" targetRef="wait-for-redb-conf" />
+    <bpmn:endEvent id="Event_1qnkwp5">
+      <bpmn:incoming>Flow_0yu7c7o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="BikeRegStart" name="BikeRegStart">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="BikeRegStart" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1n64627</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qw6lbe</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1n64627" sourceRef="StartEvent_1" targetRef="BikeRegStart" />
+    <bpmn:serviceTask id="StateDbUpdate" name="StateDbUpdate">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="StateDbUpdate" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1xfsoac</bpmn:incoming>
+      <bpmn:outgoing>Flow_0wv5olm</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1xfsoac" sourceRef="msg-catch-start" targetRef="StateDbUpdate" />
+    <bpmn:serviceTask id="ReadDbUpdateEvent" name="ReadDbUpdateEvent">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="ReadDbUpdateEvent" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gcapwi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0d6toyf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1gcapwi" sourceRef="Wait-for-sdb-confirm" targetRef="ReadDbUpdateEvent" />
+    <bpmn:serviceTask id="BikeRegDone" name="BikeRegDone">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="BikeRegDone" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_06q8inz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yu7c7o</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_06q8inz" sourceRef="wait-for-redb-conf" targetRef="BikeRegDone" />
+    <bpmn:sequenceFlow id="Flow_0yu7c7o" sourceRef="BikeRegDone" targetRef="Event_1qnkwp5" />
+  </bpmn:process>
+  <bpmn:message id="Message_31u6ohe" name="MessageStateDBUpdate">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=1" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_0taccsg" name="Message_0taccsg" />
+  <bpmn:message id="Message_243vf23" name="MessageStateDBCofirm">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=2" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_11e7qhu" name="MessageReadDbConfir">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=3" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="BikeRegSaga">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="150" y="260" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="156" y="303" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0utq4xs_di" bpmnElement="msg-catch-start">
+        <dc:Bounds x="402" y="260" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="391" y="230" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ye86q4_di" bpmnElement="Wait-for-sdb-confirm">
+        <dc:Bounds x="492" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="480" y="395" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1qnkwp5_di" bpmnElement="Event_1qnkwp5">
+        <dc:Bounds x="912" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0juob2x_di" bpmnElement="BikeRegStart">
+        <dc:Bounds x="230" y="260" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0rpxork_di" bpmnElement="StateDbUpdate">
+        <dc:Bounds x="470" y="150" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ehyt7d_di" bpmnElement="ReadDbUpdateEvent">
+        <dc:Bounds x="590" y="370" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_112rf1n_di" bpmnElement="wait-for-redb-conf">
+        <dc:Bounds x="702" y="122" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="130" width="87" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1j6gf28_di" bpmnElement="BikeRegDone">
+        <dc:Bounds x="750" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1n64627_di" bpmnElement="Flow_1n64627">
+        <di:waypoint x="186" y="278" />
+        <di:waypoint x="210" y="278" />
+        <di:waypoint x="210" y="300" />
+        <di:waypoint x="230" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qw6lbe_di" bpmnElement="Flow_1qw6lbe">
+        <di:waypoint x="330" y="300" />
+        <di:waypoint x="371" y="300" />
+        <di:waypoint x="371" y="278" />
+        <di:waypoint x="402" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xfsoac_di" bpmnElement="Flow_1xfsoac">
+        <di:waypoint x="438" y="278" />
+        <di:waypoint x="454" y="278" />
+        <di:waypoint x="454" y="190" />
+        <di:waypoint x="470" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wv5olm_di" bpmnElement="Flow_0wv5olm">
+        <di:waypoint x="520" y="230" />
+        <di:waypoint x="520" y="291" />
+        <di:waypoint x="510" y="291" />
+        <di:waypoint x="510" y="352" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gcapwi_di" bpmnElement="Flow_1gcapwi">
+        <di:waypoint x="528" y="370" />
+        <di:waypoint x="560" y="370" />
+        <di:waypoint x="560" y="410" />
+        <di:waypoint x="590" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yu7c7o_di" bpmnElement="Flow_0yu7c7o">
+        <di:waypoint x="850" y="140" />
+        <di:waypoint x="881" y="140" />
+        <di:waypoint x="881" y="270" />
+        <di:waypoint x="912" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d6toyf_di" bpmnElement="Flow_0d6toyf">
+        <di:waypoint x="690" y="400" />
+        <di:waypoint x="720" y="390" />
+        <di:waypoint x="720" y="158" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06q8inz_di" bpmnElement="Flow_06q8inz">
+        <di:waypoint x="720" y="122" />
+        <di:waypoint x="720" y="80" />
+        <di:waypoint x="800" y="80" />
+        <di:waypoint x="800" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

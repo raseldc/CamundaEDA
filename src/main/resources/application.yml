@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: CamundaEDA
+  kafka:
+    bootstrap-servers: localhost:9093
+    consumer:
+      group-id: microservice
+server:
+  port : 8006
+camunda:
+  client:
+    mode: self-managed
+    zeebe:
+      enabled: true
+      grpc-address: http://localhost:26500
+      rest-address: http://localhost:8080
+
+springdoc:
+  api-docs:
+    enabled: true
+    path : /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+kafka:
+  val : ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9093}
